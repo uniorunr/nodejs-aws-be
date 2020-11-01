@@ -1,0 +1,29 @@
+{
+  "name": "product-service",
+  "version": "1.0.0",
+  "description": "BE Implementation with AWS Lambda",
+  "main": "handler.js",
+  "scripts": {
+    "test": "jest",
+    "deploy": "sls deploy"
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.19"
+  },
+  "devDependencies": {
+    "@serverless/event-mocks": "^1.1.1",
+    "@types/aws-lambda": "^8.10.64",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.6",
+    "@types/serverless": "^1.78.6",
+    "fork-ts-checker-webpack-plugin": "^5.2.1",
+    "jest": "^26.6.1",
+    "serverless-webpack": "^5.3.5",
+    "ts-jest": "^26.4.3",
+    "ts-loader": "^8.0.7",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5",
+    "webpack": "^5.3.2",
+    "webpack-node-externals": "^2.5.2"
+  }
+}
