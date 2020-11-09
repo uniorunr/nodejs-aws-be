@@ -16,6 +16,7 @@ const clientConfig: ClientConfig = {
   ssl: {
     rejectUnauthorized: false
   },
+  connectionTimeoutMillis: 5000
 };
 
 const getClient = async (): Promise<Client> => {

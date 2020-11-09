@@ -1,9 +1,11 @@
 import { addProduct as addProductPG } from '../../db/init';
 import { response , productDataValidation } from '../utils';
 
-export const addProduct = async ({ body }) => {
+export const addProduct = async (event) => {
   try {
-    const product = JSON.parse(body);
+    console.log(`Incoming getProductById request: ${JSON.stringify(event)}`);
+    
+    const product = JSON.parse(event.body);
     const isValidData = productDataValidation(product);
 
     if (!isValidData) {
