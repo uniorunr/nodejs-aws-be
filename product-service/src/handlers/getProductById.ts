@@ -1,10 +1,10 @@
-import { products } from '../data/products';
+import { getProductById as getProductByIdPG } from '../../db/init';
 import { response } from '../utils';
 
 export const getProductById = async (event) => {
   try {
     const { id } = event.pathParameters;
-    const productsData = await Promise.resolve(products);
+    const productsData = await getProductByIdPG(id);
     const result = productsData.find((product) => product.id === +id);
 
     if (!result) {

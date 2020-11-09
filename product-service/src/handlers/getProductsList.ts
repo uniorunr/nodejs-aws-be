@@ -1,9 +1,9 @@
-import { products } from '../data/products';
+import { getProductsList as getProductsListPG } from '../../db/init';
 import { response } from '../utils';
 
 export const getProductsList = async () => {
   try {
-    const productsData = await Promise.resolve(products);
+    const productsData = await getProductsListPG();
 
     if(!productsData) {
       return response(404, { message: 'Products not found!' });
