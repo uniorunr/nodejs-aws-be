@@ -30,7 +30,11 @@ export const getProductsList = async () => {
   const client = await getClient();
 
   try {
-    const { rows } = await client.query('SELECT * FROM product');
+    const { rows } = await client.query(
+      `SELECT * FROM product productTable
+        LEFT JOIN (SELECT stocks.count, stocks.product_id as stock_product_id FROM stocks) stocksTable
+          ON productTable.id = stocksTable.stock_product_id`
+      );
 
     return rows;
   } catch (error) {
@@ -44,7 +48,12 @@ export const getProductById = async (id) => {
   const client = await getClient();
 
   try {
-    const { rows } = await client.query('SELECT * FROM product WHERE id = $1', [id]);
+    const { rows } = await client.query(
+      `SELECT *
+        FROM stocks, product 
+        WHERE product.id = $1 AND product.id = stocks.product_id`, 
+      [id]
+      );
 
     return rows[0];
   } catch (error) {
