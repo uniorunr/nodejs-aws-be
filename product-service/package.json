@@ -8,6 +8,8 @@
     "deploy": "sls deploy"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "pg": "^8.4.2",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {

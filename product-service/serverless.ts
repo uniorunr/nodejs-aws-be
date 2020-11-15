@@ -1,4 +1,15 @@
 import type { Serverless } from 'serverless/aws';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+const {
+  PG_HOST,
+  PG_PORT,
+  PG_DATABASE,
+  PG_USERNAME,
+  PG_PASSWORD,
+} = process.env;
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -8,7 +19,9 @@ const serverlessConfiguration: Serverless = {
   custom: {
     webpack: {
       webpackConfig: './webpack.config.js',
-      includeModules: true,
+      includeModules: {
+        forceInclude: ['pg']
+      },
     },
   },
   plugins: ['serverless-webpack'],
@@ -22,6 +35,11 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PG_HOST,
+      PG_DATABASE,
+      PG_USERNAME,
+      PG_PASSWORD,
+      PG_PORT: +PG_PORT,
     },
   },
   functions: {
@@ -50,6 +68,18 @@ const serverlessConfiguration: Serverless = {
         },
       ],
     },
+    addProduct: {
+      handler: 'handler.addProduct',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: '/products',
+            cors: true,
+          },
+        },
+      ],
+    }
   },
 };
 
