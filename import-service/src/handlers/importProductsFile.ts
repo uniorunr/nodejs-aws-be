@@ -1,9 +1,7 @@
-import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import * as AWS from 'aws-sdk';
 
 import { response } from '../utils';
 
-const { BUCKET_NAME: Bucket } = process.env;
 const s3 = new AWS.S3({ region: 'eu-west-1' });
 
 const importProductsFile = async (name) => {
@@ -13,7 +11,7 @@ const importProductsFile = async (name) => {
     }
 
     const url = await s3.getSignedUrlPromise('putObject', {
-      Bucket,
+      Bucket: 'import-service-aws-s3',
       Key: `uploaded/${name}`,
       Expires: 60,
       ContentType: 'text/csv'
@@ -25,8 +23,8 @@ const importProductsFile = async (name) => {
   }
 };
 
-const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
-  const { queryStringParameters: { name } = {} } = event;
+const handler = async (event) => {
+  const { queryStringParameters: { name = null } = {} } = event;
 
   return importProductsFile(name);
 };
