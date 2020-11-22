@@ -2,6 +2,7 @@ import * as AWS from 'aws-sdk';
 
 import { response } from '../utils';
 
+const { BUCKET_NAME_FOR_SERVICES: Bucket } = process.env;
 const s3 = new AWS.S3({ region: 'eu-west-1' });
 
 const importProductsFile = async (name) => {
@@ -11,7 +12,7 @@ const importProductsFile = async (name) => {
     }
 
     const url = await s3.getSignedUrlPromise('putObject', {
-      Bucket: 'import-service-aws-s3',
+      Bucket,
       Key: `uploaded/${name}`,
       Expires: 60,
       ContentType: 'text/csv'
