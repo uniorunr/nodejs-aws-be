@@ -67,14 +67,20 @@ export const addProduct = async ({
   title,
   description,
   price,
-  img
+  img,
+  count,
 }) => {
   const client = await getClient();
 
   try {
-    const response = await client.query(
+    const { rows: [{ id }] } = await client.query(
       'INSERT INTO product(title, description, price, img) VALUES($1, $2, $3, $4)', 
-      [title, description, price, img]
+      [title, description, price, img],
+    );
+
+    const response = await client.query(
+      'INSERT INTO stocks(product_id, count) VALUES($1, $2)',
+      [id, count],
     );
 
     return { succsess: !!response };

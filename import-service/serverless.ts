@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const { 
+  SQS_URL,
   BUCKET_NAME,
   BUCKET_NAME_FOR_SERVICES,
 } = process.env;
@@ -33,6 +34,8 @@ const serverlessConfiguration: Serverless = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       BUCKET_NAME,
+      BUCKET_NAME_FOR_SERVICES,
+      SQS_URL,
     },
     iamRoleStatements: [
       {
@@ -44,6 +47,11 @@ const serverlessConfiguration: Serverless = {
         Effect: 'Allow',
         Action: 's3:*',
         Resource: `arn:aws:s3:::${BUCKET_NAME_FOR_SERVICES}/*`,
+      },
+      {
+        Effect: "Allow",
+        Action: "sqs:*",
+        Resource: "${cf:product-service-dev.SQSQueueArn}",
       },
     ],
   },
