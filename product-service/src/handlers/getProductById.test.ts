@@ -1,16 +1,14 @@
 import { getProductById } from './getProductById';
-import { products } from '../data/products';
 
-describe('getProductsList', () => {
-  const id = 2;
+describe('getProductById', () => {
+  const id = 'testId';
   const mockEvent = {
     pathParameters: { id }
   }
 
-  it('should return all products', async () => {
+  it('should return 500 if product does not exist', async () => {
     const response = await getProductById(mockEvent);
     
-    expect(response.statusCode).toEqual(200);
-    expect(response.body).toEqual(JSON.stringify(products[id - 1]));
+    expect(response.statusCode).toEqual(500);
   });
 });

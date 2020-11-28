@@ -9,6 +9,8 @@ const {
   PG_DATABASE,
   PG_USERNAME,
   PG_PASSWORD,
+  OK_EMAIL,
+  FAIL_EMAIL
 } = process.env;
 
 const serverlessConfiguration: Serverless = {
@@ -40,7 +42,25 @@ const serverlessConfiguration: Serverless = {
       PG_USERNAME,
       PG_PASSWORD,
       PG_PORT: +PG_PORT,
+      SQS_URL: {
+        Ref: 'SQSQueue',
+      },
+      SNS_TOPIC: {
+        Ref: 'SNSTopic',
+      },
     },
+    iamRoleStatements: [
+      {
+        Effect: "Allow",
+        Action: "sqs:*",
+        Resource: [{ "Fn::GetAtt": ["SQSQueue", "Arn"] }],
+      },
+      {
+        Effect: "Allow",
+        Action: "sns:*",
+        Resource: [{ Ref: "SNSTopic" }],
+      },
+    ],
   },
   functions: {
     getProductsList: {
@@ -79,7 +99,74 @@ const serverlessConfiguration: Serverless = {
           },
         },
       ],
-    }
+    },
+    catalogBatchProcess: {
+      handler: 'handler.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn: {
+              'Fn::GetAtt': ['SQSQueue', 'Arn'],
+            },
+          },
+        },
+      ],
+    },
+  },
+  resources: {
+    Resources: {
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'import-products-queue-sqs',
+        },
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'new-product-notification-sns',
+        },
+      },
+      SNSOkSubscription: {
+        Type: "AWS::SNS::Subscription",
+        Properties: {
+          Endpoint: OK_EMAIL,
+          Protocol: "email",
+          TopicArn: {
+            Ref: "SNSTopic",
+          },
+          FilterPolicy: {
+            quantity: ["enough"],
+          },
+        },
+      },
+      SNSErrorSubscription: {
+        Type: "AWS::SNS::Subscription",
+        Properties: {
+          Endpoint: FAIL_EMAIL,
+          Protocol: "email",
+          TopicArn: {
+            Ref: "SNSTopic",
+          },
+          FilterPolicy: {
+            quantity: ["one left", "failed"],
+          },
+        },
+      },
+    },
+    Outputs: {
+      SQSQueueUrl: {
+        Value: {
+          Ref: 'SQSQueue',
+        },
+      },
+      SQSQueueArn: {
+        Value: {
+          'Fn::GetAtt': ['SQSQueue', 'Arn'],
+        },
+      },
+    },
   },
 };
 

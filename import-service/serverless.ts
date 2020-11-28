@@ -3,7 +3,11 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const { BUCKET_NAME } = process.env;
+const { 
+  SQS_URL,
+  BUCKET_NAME,
+  BUCKET_NAME_FOR_SERVICES,
+} = process.env;
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -29,17 +33,25 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      BUCKET_NAME,
+      BUCKET_NAME_FOR_SERVICES,
+      SQS_URL,
     },
     iamRoleStatements: [
       {
         Effect: 'Allow',
         Action: 'S3:ListBucket',
-        Resource: `arn:aws:s3:::${BUCKET_NAME}`,
+        Resource: `arn:aws:s3:::${BUCKET_NAME_FOR_SERVICES}`,
       },
       {
         Effect: 'Allow',
         Action: 's3:*',
-        Resource: `arn:aws:s3:::${BUCKET_NAME}/*`,
+        Resource: `arn:aws:s3:::${BUCKET_NAME_FOR_SERVICES}/*`,
+      },
+      {
+        Effect: "Allow",
+        Action: "sqs:*",
+        Resource: "${cf:product-service-dev.SQSQueueArn}",
       },
     ],
   },
@@ -68,7 +80,7 @@ const serverlessConfiguration: Serverless = {
       events: [
         {
           s3: {
-            bucket: BUCKET_NAME,
+            bucket: `${BUCKET_NAME}`,
             event: 's3:ObjectCreated:*',
             rules: [
               {

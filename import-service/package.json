@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "aws-sdk": "^2.792.0",
-    "dotenv": "^8.2.0",
     "csv-parser": "^2.3.3",
+    "dotenv": "^8.2.0",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {

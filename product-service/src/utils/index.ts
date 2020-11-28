@@ -12,10 +12,9 @@ export const productDataValidation = (product) => {
       title,
       description,
       price,
-      img
     } = product;
 
-    if (title && description && price && img) {
+    if (title && description && price) {
       return true;
     }
 

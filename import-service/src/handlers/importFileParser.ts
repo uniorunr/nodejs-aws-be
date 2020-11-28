@@ -2,7 +2,9 @@ import { S3Handler, S3Event } from 'aws-lambda';
 import * as AWS from 'aws-sdk';
 import * as csvParser from 'csv-parser';
 
-const s3 = new AWS.S3({ region: 'eu-west-1' });
+const { REGION, SQS_URL } = process.env;
+const s3 = new AWS.S3({ region: REGION });
+const sqs = new AWS.SQS({ region: REGION });
 
 const parseRecords = async (records) => {
   const recordsPromises = records.map(async record => {
@@ -17,7 +19,14 @@ const parseRecords = async (records) => {
 
       stream
         .pipe(csvParser())
-        .on('data', data => console.info('data', data))
+        .on('data', async (data) => {
+          const records = data.map(record => sqs.sendMessage({
+            MessageBody: JSON.stringify(record),
+            QueueUrl: SQS_URL,
+          }).promise());
+
+          await Promise.all(records);
+        })
         .on('error', ({ stack }) => reject(new Error(stack)))
         .on('end', async () => {
           try {
