@@ -7,7 +7,9 @@
     "test": "jest",
     "deploy": "sls deploy"
   },
-  "dependencies": {},
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
     "@types/jest": "^26.0.15",

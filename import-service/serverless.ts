@@ -49,9 +49,9 @@ const serverlessConfiguration: Serverless = {
         Resource: `arn:aws:s3:::${BUCKET_NAME_FOR_SERVICES}/*`,
       },
       {
-        Effect: "Allow",
-        Action: "sqs:*",
-        Resource: "${cf:product-service-dev.SQSQueueArn}",
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: '${cf:product-service-dev.SQSQueueArn}',
       },
     ],
   },
@@ -71,6 +71,13 @@ const serverlessConfiguration: Serverless = {
               },
             },
             cors: true,
+            authorizer: {
+              name: 'tokenAuthorizer',
+              arn: '${cf:authorization-service-${self:provider.stage}.basicAuthorizerArn}',
+              resultTtlInSeconds: 0,
+              identitySource: 'method.request.header.Authorization',
+              type: 'token',
+            },
           },
         },
       ],
@@ -92,6 +99,25 @@ const serverlessConfiguration: Serverless = {
           },
         },
       ],
+    },
+  },
+  resources: {
+    Resources: {
+      GatewayResponseDefault4XX: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Methods': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Credentials': "'true'",
+          },
+          ResponseType: 'DEFAULT_4XX',
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi',
+          },
+        },
+      },
     },
   },
 };
