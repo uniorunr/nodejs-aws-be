@@ -34,22 +34,21 @@ const basicAuthorizer: APIGatewayTokenAuthorizerHandler = (
   }
 
   try {
-    const [authScheme, encodedCreds] = authorizationToken.split(' ') || [];
-
-    if (!authScheme || !encodedCreds) {
+    const [scheme, credsBase64] = authorizationToken.split(' ');
+    if (scheme !== 'Basic' || !credsBase64) {
       return callback('Unauthorized');
     }
 
-    const [username, password] = Buffer.from(encodedCreds, 'base64')
+    const [username, password] = Buffer.from(credsBase64, 'base64')
       .toString('utf-8')
       .split(':');
     const validPassword = getValidPassword(username);
     const effect = validPassword && validPassword === password ? 'Allow' : 'Deny';
-    const policy = generatePolicy(encodedCreds, methodArn, effect);
+    const policy = generatePolicy(credsBase64, methodArn, effect);
 
     return callback(null, policy);
   } catch (error) {
-    return callback('Unauthorized');
+    return callback(`Unauthorized: ${error}`);
   }
 };
 

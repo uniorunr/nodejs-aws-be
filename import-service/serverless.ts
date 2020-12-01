@@ -73,7 +73,7 @@ const serverlessConfiguration: Serverless = {
             cors: true,
             authorizer: {
               name: 'tokenAuthorizer',
-              arn: '${cf:authorization-service-${self:provider.stage}.basicAuthorizerArn}',
+              arn: '${cf:authorization-service-dev.basicAuthorizerArn}',
               resultTtlInSeconds: 0,
               identitySource: 'method.request.header.Authorization',
               type: 'token',
